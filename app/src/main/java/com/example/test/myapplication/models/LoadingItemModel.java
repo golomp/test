@@ -49,4 +49,9 @@ public class LoadingItemModel {
         text = "Loading more items...";
         progressBarVisibility = true;
     }
+
+    public void onStart() {
+        text = "";
+        progressBarVisibility = false;
+    }
 }

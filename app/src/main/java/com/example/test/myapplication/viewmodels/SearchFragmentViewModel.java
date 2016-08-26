@@ -43,11 +43,6 @@ public class SearchFragmentViewModel {
 
     public SongsAdapter adapter;
 
-
-    public enum State {ERROR, LOADING, ALL_FETCHED}
-
-    private State state = State.LOADING;
-    private State oldState = State.LOADING;
     private boolean internetWorking = true;
 
     public SearchFragmentViewModel(Context context) {
@@ -57,6 +52,7 @@ public class SearchFragmentViewModel {
             ((TestApp) context.getApplicationContext()).getNetComponent().inject(this);
             initList(context);
         }
+        onStart();
     }
 
     private void initWidgets() {
@@ -74,7 +70,8 @@ public class SearchFragmentViewModel {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 SearchFragmentViewModel.this.recyclerView.scrollPosition = (((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition());
-                if ((((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition()) > lastItemPos - 2) {
+                if ((((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition()) > lastItemPos - 2 &&
+                        (((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition()) > 2) {
                     fetchSongs();
                 }
             }
@@ -96,7 +93,7 @@ public class SearchFragmentViewModel {
     public void fetchSongs() {
         if(internetWorking) {
             loading();
-            Observable<SearchData> tracksObservable = apiService.getTodos(searchText.getText(), "track", ITEMS_PER_PAGE, lastItemPos);
+            Observable<SearchData> tracksObservable = apiService.getSongs(searchText.getText(), "track", ITEMS_PER_PAGE, lastItemPos);
             tracksObservable.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError(throwable -> {
@@ -120,18 +117,20 @@ public class SearchFragmentViewModel {
     public void allFetched() {
         loadingItemModel.allFetched();
         adapter.notifyItemChanged(loadingItemModel.getPosition());
-        state = State.ALL_FETCHED;
     }
 
     public void onError() {
         loadingItemModel.onError();
         adapter.notifyItemChanged(loadingItemModel.getPosition());
-        state = State.ERROR;
     }
 
     public void loading() {
         loadingItemModel.loading();
         adapter.notifyItemChanged(loadingItemModel.getPosition());
-        state = State.LOADING;
+    }
+
+    public void onStart(){
+        loadingItemModel.onStart();
+        adapter.notifyItemChanged(loadingItemModel.getPosition());
     }
 }

@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Spotify Songs</string>
     <string name="song_title_hint">song title</string>
 </resources>
