@@ -2,11 +2,27 @@ package com.example.test.myapplication.viewmodels;
 
 import android.content.Context;
 
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+
 import com.example.test.myapplication.TestApp;
+import com.example.test.myapplication.adapters.SongsAdapter;
+import com.example.test.myapplication.models.LoadingItemModel;
 import com.example.test.myapplication.rest.ApiService;
+import com.example.test.myapplication.rest.models.SearchData;
+import com.example.test.myapplication.rest.models.Song;
+import com.example.test.myapplication.viewmodels.widgets.ButtonViewModel;
 import com.example.test.myapplication.viewmodels.widgets.EditTextViewModel;
+import com.example.test.myapplication.viewmodels.widgets.RecyclerViewModel;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by test on 26/08/16.
@@ -17,16 +33,107 @@ public class SearchFragmentViewModel {
     @Inject
     ApiService apiService;
 
-    public EditTextViewModel searchText;
+    public static final int ITEMS_PER_PAGE = 20;
+    private int lastItemPos = 0;
 
-    public SearchFragmentViewModel(Context context){
+    private ArrayList<Song> songs = new ArrayList<>();
+
+    public EditTextViewModel searchText;
+    public ButtonViewModel searchButton;
+    public RecyclerViewModel recyclerView;
+    public LoadingItemModel loadingItemModel = new LoadingItemModel("Loading more items...", true);
+
+    public SongsAdapter adapter;
+
+
+    public enum State {ERROR, LOADING, ALL_FETCHED}
+
+    private State state = State.LOADING;
+    private State oldState = State.LOADING;
+    private boolean internetWorking = true;
+
+    public SearchFragmentViewModel(Context context) {
         initWidgets();
-        if(context != null){
+        adapter = new SongsAdapter(songs, loadingItemModel);
+        if (context != null) {
             ((TestApp) context.getApplicationContext()).getNetComponent().inject(this);
+            initList(context);
         }
+        fetchSongs();
+
     }
 
     private void initWidgets() {
-        searchText = new EditTextViewModel("siema");
+        searchButton = new ButtonViewModel("search", v -> resetAndFetchSongs());
+        searchText = new EditTextViewModel("lady");
+    }
+
+    private void initList(Context context) {
+        recyclerView = new RecyclerViewModel();
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setFixedSize(true);
+        RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                SearchFragmentViewModel.this.recyclerView.scrollPosition = (((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition());
+                if ((((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition()) > lastItemPos - 2) {
+                    fetchSongs();
+                }
+            }
+        };
+        recyclerView.setScrollListener(scrollListener);
+    }
+
+
+    public void resetAndFetchSongs() {
+        internetWorking = true;
+        lastItemPos = 0;
+        songs.clear();
+        adapter.notifyDataSetChanged();
+        fetchSongs();
+    }
+
+    public void fetchSongs() {
+        if(internetWorking) {
+            loading();
+            Observable<SearchData> tracksObservable = apiService.getTodos(searchText.getText(), "track", ITEMS_PER_PAGE, lastItemPos);
+            tracksObservable.subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError(throwable -> {
+                        onError();
+                        internetWorking = false;
+                    })
+                    .onErrorResumeNext(throwable1 -> Observable.empty())
+                    .subscribe(data -> {
+                        if (data != null && data.tracks != null && data.tracks.songs != null) {
+                            songs.addAll(data.tracks.songs);
+                            adapter.notifyDataSetChanged();
+                            lastItemPos = songs.size();
+                            if (data.tracks.songs.size() < ITEMS_PER_PAGE) {
+                                allFetched();
+                            }
+                        }
+                    });
+        }
+    }
+
+    public void allFetched() {
+        loadingItemModel.allFetched();
+        adapter.notifyItemChanged(loadingItemModel.getPosition());
+        state = State.ALL_FETCHED;
+    }
+
+    public void onError() {
+        loadingItemModel.onError();
+        adapter.notifyItemChanged(loadingItemModel.getPosition());
+        state = State.ERROR;
+    }
+
+    public void loading() {
+        loadingItemModel.loading();
+        adapter.notifyItemChanged(loadingItemModel.getPosition());
+        state = State.LOADING;
     }
 }
