@@ -15,6 +15,14 @@ public class Song {
     @Expose
     public List<Artist> artists;
 
+    @SerializedName("name")
+    @Expose
+    public String name;
+
+    @SerializedName("album")
+    @Expose
+    public Album album;
+
     public String getFirstArtist(){
         return artists.get(0).name;
     }

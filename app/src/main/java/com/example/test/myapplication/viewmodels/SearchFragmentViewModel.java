@@ -59,13 +59,11 @@ public class SearchFragmentViewModel {
             ((TestApp) context.getApplicationContext()).getNetComponent().inject(this);
             initList(context);
         }
-        fetchSongs();
-
     }
 
     private void initWidgets() {
         searchButton = new ButtonViewModel("search", v -> resetAndFetchSongs());
-        searchText = new EditTextViewModel("lady");
+        searchText = new EditTextViewModel("");
     }
 
     private void initList(Context context) {
@@ -88,11 +86,13 @@ public class SearchFragmentViewModel {
 
 
     public void resetAndFetchSongs() {
-        internetWorking = true;
-        lastItemPos = 0;
-        songs.clear();
-        adapter.notifyDataSetChanged();
-        fetchSongs();
+        if(searchText.text.length()>0) {
+            internetWorking = true;
+            lastItemPos = 0;
+            songs.clear();
+            adapter.notifyDataSetChanged();
+            fetchSongs();
+        }
     }
 
     public void fetchSongs() {
