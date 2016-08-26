@@ -8,8 +8,7 @@ import com.example.test.myapplication.BR;
 
 public class BaseViewModel extends BaseObservable {
 
-    public BaseViewModel() {
-    }
+    public BaseViewModel() {}
 
     public BaseViewModel(int visibility) {
         setVisibility(visibility);

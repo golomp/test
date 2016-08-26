@@ -51,8 +51,8 @@ public class SearchFragmentViewModel {
         if (context != null) {
             ((TestApp) context.getApplicationContext()).getNetComponent().inject(this);
             initList(context);
+            onStart();
         }
-        onStart();
     }
 
     private void initWidgets() {
@@ -81,7 +81,7 @@ public class SearchFragmentViewModel {
 
 
     public void resetAndFetchSongs() {
-        if(searchText.text.length()>0) {
+        if (searchText.text.length() > 0) {
             internetWorking = true;
             lastItemPos = 0;
             songs.clear();
@@ -91,7 +91,7 @@ public class SearchFragmentViewModel {
     }
 
     public void fetchSongs() {
-        if(internetWorking) {
+        if (internetWorking && apiService != null) {
             loading();
             Observable<SearchData> tracksObservable = apiService.getSongs(searchText.getText(), "track", ITEMS_PER_PAGE, lastItemPos);
             tracksObservable.subscribeOn(Schedulers.newThread())
@@ -129,8 +129,12 @@ public class SearchFragmentViewModel {
         adapter.notifyItemChanged(loadingItemModel.getPosition());
     }
 
-    public void onStart(){
+    public void onStart() {
         loadingItemModel.onStart();
         adapter.notifyItemChanged(loadingItemModel.getPosition());
+    }
+
+    public ArrayList<Song> getSongs() {
+        return songs;
     }
 }
