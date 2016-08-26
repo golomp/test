@@ -2,7 +2,6 @@ package com.example.test.myapplication.dagger.components;
 
 import com.example.test.myapplication.dagger.modules.AppModule;
 import com.example.test.myapplication.dagger.modules.NetModule;
-import com.example.test.myapplication.fragments.SearchFragment;
 import com.example.test.myapplication.viewmodels.SearchFragmentViewModel;
 
 import javax.inject.Singleton;

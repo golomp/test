@@ -1,10 +1,8 @@
 package com.example.test.myapplication.viewmodels;
 
 import android.content.Context;
-
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.example.test.myapplication.TestApp;
 import com.example.test.myapplication.adapters.SongsAdapter;

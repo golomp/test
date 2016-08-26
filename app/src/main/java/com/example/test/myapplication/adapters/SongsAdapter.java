@@ -11,7 +11,6 @@ import com.example.test.myapplication.databinding.LoadingItemBinding;
 import com.example.test.myapplication.databinding.SongItemBinding;
 import com.example.test.myapplication.models.LoadingItemModel;
 import com.example.test.myapplication.rest.models.Song;
-import com.example.test.myapplication.rest.models.Tracks;
 import com.example.test.myapplication.viewmodels.LoadingItemViewModel;
 
 import java.util.ArrayList;

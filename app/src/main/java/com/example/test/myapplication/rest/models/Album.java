@@ -17,7 +17,7 @@ public class Album {
     public String id;
     @SerializedName("images")
     @Expose
-    public List<Image> images = new ArrayList<Image>();
+    public List<Image> images = new ArrayList<>();
     @SerializedName("name")
     @Expose
     public String name;

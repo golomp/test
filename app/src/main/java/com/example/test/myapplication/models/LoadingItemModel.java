@@ -1,8 +1,5 @@
 package com.example.test.myapplication.models;
 
-/**
- * Created by maciej on 13.07.16.
- */
 public class LoadingItemModel {
     private String text;
     private boolean progressBarVisibility;

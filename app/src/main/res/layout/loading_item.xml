@@ -14,14 +14,14 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/list_footer_height"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
         <ProgressBar
             android:id="@+id/progress_bar"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="@dimen/list_footer_progress_bar_size"
+            android:layout_height="@dimen/list_footer_progress_bar_size"
             android:layout_centerVertical="true"
             android:visibility="@{viewModel.progress.visibility}" />
 
@@ -29,8 +29,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="4dp"
-            android:layout_marginStart="4dp"
+            android:layout_marginLeft="@dimen/small_margin"
+            android:layout_marginStart="@dimen/small_margin"
             android:layout_toEndOf="@+id/progress_bar"
             android:layout_toRightOf="@+id/progress_bar"
             android:text="@{viewModel.title.text}" />

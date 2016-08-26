@@ -27,8 +27,8 @@ public class BaseViewModel extends BaseObservable {
         notifyPropertyChanged(BR.visibility);
     }
 
-    public void setVisibility(int visiblity) {
-        this.visibility = visiblity;
+    public void setVisibility(int visibility) {
+        this.visibility = visibility;
         notifyPropertyChanged(BR.visibility);
     }
 }
